@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-900 text-white">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chupar Rueda</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="96x96" />
+    <style>
+        @keyframes scroll-clouds {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: -10000px 0;
+            }
+        }
+        #game-view {
+            background-image: url('/assets/background/clouds.png');
+            background-repeat: repeat-x;
+            animation: scroll-clouds 120s linear infinite;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <div id="main-content" class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-yellow-400">Chupar Rueda (Wheel Sucker)</h1>
+            <p class="text-gray-400">Draft your enemies while racing for the hot seat on real-world courses.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+
+            <!-- Left Column: Connection & Course Selection -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
+                <div id="pre-race-setup">
+                    <!-- Connection -->
+                    <div class="mb-6 pb-6 border-b border-gray-700">
+                        <h2 class="text-2xl font-semibold mb-3">1. Connect</h2>
+                        <div class="flex items-center justify-between bg-gray-700 p-4 rounded-lg">
+                            <div>
+                                <h3 class="font-semibold">Bluetooth Smart Trainer</h3>
+                                <p id="bluetooth-status" class="text-sm text-red-400">Disconnected</p>
+                            </div>
+                            <button id="connect-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">Connect</button>
+                        </div>
+                        <div class="flex items-center justify-between bg-gray-700 p-4 rounded-lg mt-2">
+                            <div>
+                                <h3 class="font-semibold">Bluetooth Power Meter</h3>
+                                <p id="power-meter-status" class="text-sm text-red-400">Disconnected</p>
+                            </div>
+                            <button id="connect-power-meter-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">Connect</button>
+                        </div>
+                         <p class="text-center text-gray-400 my-2">OR</p>
+                        <button id="simulator-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300">Finger Power</button>
+
+                        <div id="collision-avoidance-container" class="hidden mt-4 bg-gray-700 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold">Collision Avoidance Game <span id="collision-avoidance-status" class="text-sm"></span></h3>
+                                    <p class="text-sm text-gray-400">Jump to avoid oncoming villains.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="collision-avoidance-toggle" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ERG Mode -->
+                    <div id="erg-mode-section" class="hidden mb-6 pb-6 border-b border-gray-700">
+                        <h2 class="text-2xl font-semibold mb-3">ERG Mode</h2>
+                        <div class="flex items-center justify-between bg-gray-700 p-4 rounded-lg">
+                            <div>
+                                <h3 class="font-semibold">Enable ERG Mode</h3>
+                                <p class="text-sm text-gray-400">Set a target power level.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="erg-mode-toggle" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        <div id="erg-watts-input-container" class="hidden mt-4">
+                            <label for="erg-watts-input" class="block text-sm font-medium text-gray-300 mb-1">Zone 2 Watts</label>
+                            <input type="number" id="erg-watts-input" class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" value="150">
+                        </div>
+                    </div>
+
+                    <!-- Course Selection -->
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold mb-3">2. Select Course</h2>
+                        <div id="course-list" class="space-y-2 max-h-48 overflow-y-auto mb-4 p-2 bg-gray-900 rounded-md">
+                            <!-- Courses will be loaded here -->
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h3 class="font-semibold mb-2">Upload New Course</h3>
+                            <input type="file" id="gpx-upload" class="hidden" accept=".gpx"/>
+                            <label for="gpx-upload" class="w-full text-center cursor-pointer bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded transition duration-300 block">Choose GPX File</label>
+                            <p id="gpx-file-name" class="text-sm text-gray-400 mt-2 text-center"></p>
+                        </div>
+                    </div>
+
+                    <!-- Racer Info -->
+                     <div class="mb-6 pb-6 border-b border-gray-700">
+                        <h2 class="text-2xl font-semibold mb-3">3. Racer Info</h2>
+                         <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="racer-name-input" class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+                                <input type="text" id="racer-name-input" class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" value="Remco">
+                            </div>
+                             <div>
+                                <label for="racer-weight-input" class="block text-sm font-medium text-gray-300 mb-1">Weight (lbs)</label>
+                                <input type="number" id="racer-weight-input" class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" value="160">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ghost Pacer Settings -->
+                    <div class="mb-6 pb-6 border-b border-gray-700">
+                        <h2 class="text-2xl font-semibold mb-3">4. Ghost Pacer</h2>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label for="ghost-pacer-mode" class="block text-sm font-medium text-gray-300 mb-1">Pacer Mode</label>
+                                <select id="ghost-pacer-mode" class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                                    <option value="off">Off</option>
+                                    <option value="record">Record Speed</option>
+                                    <option value="target_speed">Target Speed</option>
+                                    <option value="target_power">Target Power</option>
+                                </select>
+                            </div>
+                            <div id="ghost-target-speed-container" class="hidden">
+                                <label for="ghost-target-speed" class="block text-sm font-medium text-gray-300 mb-1">Target Speed (mph)</label>
+                                <input type="number" id="ghost-target-speed" class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" value="20">
+                            </div>
+                            <div id="ghost-target-power-container" class="hidden">
+                                <label for="ghost-target-power" class="block text-sm font-medium text-gray-300 mb-1">Target Power (watts)</label>
+                                <input type="number" id="ghost-target-power" class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" value="200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="start-race-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg text-xl transition duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed">Start Race</button>
+                </div>
+            </div>
+
+            <!-- Right Column: Course Profile -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
+                 <div id="course-profile-section">
+                    <h3 class="text-2xl font-semibold mb-4">Course Profile</h3>
+                     <div id="course-profile-container" class="relative h-40 bg-gray-700 rounded-lg p-2">
+                        <canvas id="course-profile-canvas" class="w-full h-full"></canvas>
+                        <div id="course-profile-placeholder" class="absolute inset-0 flex items-center justify-center text-gray-400">Select a course to see the profile</div>
+                    </div>
+                 </div>
+
+                <div id="record-run-info" class="mt-4 text-center bg-gray-700 p-4 rounded-lg">
+                    <h4 class="font-semibold text-yellow-400">Course Record</h4>
+                    <p><span id="record-holder-name" class="font-bold">N/A</span>: <span id="record-holder-time" class="font-mono">N/A</span></p>
+                    <h4 class="font-semibold text-yellow-400 mt-2">High Score</h4>
+                    <p><span id="high-score-holder-name" class="font-bold">N/A</span>: <span id="high-score-points" class="font-mono">N/A</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Race Display - This will be cloned or shown when the race starts -->
+        <!-- Race Display -->
+        <div id="race-display"
+             class="hidden mt-8 grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+        <div class="bg-gray-700 p-4 rounded-lg">
+        <h4 class="font-semibold text-sm text-gray-400">Power</h4>
+        <p id="power-display" class="text-2xl font-bold">0 W</p>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg">
+        <h4 class="font-semibold text-sm text-gray-400">Speed</h4>
+        <p id="speed-display" class="text-2xl font-bold">0.0 mph</p>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg">
+        <h4 class="font-semibold text-sm text-gray-400">Distance</h4>
+        <p id="distance-display" class="text-2xl font-bold">0.00 mi</p>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg">
+        <h4 class="font-semibold text-sm text-gray-400">Gradient</h4>
+        <p id="gradient-display" class="text-2xl font-bold">0.0 %</p>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg">
+        <h4 class="font-semibold text-sm text-gray-400">Time</h4>
+        <p id="elapsed-time-display" class="text-2xl font-bold">00:00:00</p>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg">
+        <h4 class="font-semibold text-sm text-gray-400">Target Speed</h4>
+        <p id="target-speed-display" class="text-2xl font-bold">20.0 mph</p>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg">
+        <h4 class="font-semibold text-sm text-gray-400">Points</h4>
+        <p id="points-display" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg">
+        <h4 class="font-semibold text-sm text-gray-400">Cadence</h4>
+        <p id="cadence-display" class="text-2xl font-bold">N/A</p>
+        </div>
+         <div class="bg-gray-700 p-4 rounded-lg md:col-span-2">
+        <h4 class="font-semibold text-sm text-gray-400">Status</h4>
+        <p id="race-status" class="text-sm font-bold">Waiting to start...</p>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg md:col-span-1">
+        <h4 class="font-semibold text-sm text-gray-400">Distance to Ghost</h4>
+         <p id="ghost-diff-display" class="text-2xl font-bold text-gray-400">0 ft</p>
+        </div>
+        <div id="villain-display" class="hidden bg-gray-800 p-4 rounded-lg md:col-span-2 border-2 border-red-500">
+        <h4 id="villain-name-display" class="font-semibold text-xl text-red-400">Rouleur</h4>
+        <p id="villain-power-display" class="text-sm font-bold">0W </p>
+        <p id="villain-time-display" class="text-sm font-bold">0s </p>
+        <p id="villain-dist-display" class="text-lg font-bold">0m </p>
+        </div>
+        </div>
+
+    </div>
+
+    <!-- Fullscreen Game View Container -->
+    <div id="game-view" class="hidden fixed inset-0 z-40"></div>
+
+    <div id="simulator-power-slider-container" class="hidden fixed bottom-10 left-1/2 transform -translate-x-1/2 w-3/4 z-50 bg-gray-800 p-4 rounded-lg">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label for="simulator-cadence-slider" class="block text-sm font-medium text-gray-300 mb-1">Cadence (RPM)</label>
+                <input type="range" id="simulator-cadence-slider" min="85" max="95" value="90" class="w-full">
+                <p class="text-center text-white mt-1" id="sim-cadence-display">90 RPM</p>
+            </div>
+            <div>
+                <label for="simulator-gear-slider" class="block text-sm font-medium text-gray-300 mb-1">Gear (1-12)</label>
+                <input type="range" id="simulator-gear-slider" min="1" max="12" value="6" class="w-full">
+                <p class="text-center text-white mt-1" id="sim-gear-display">Gear 6</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulator Controls -->
+    <div id="simulator-controls" class="hidden fixed bottom-4 right-4 bg-gray-900 p-4 rounded-lg shadow-lg z-50">
+        <h3 class="font-semibold text-lg mb-2">Power</h3>
+        <div class="text-center">
+            <p class="text-3xl font-bold" id="sim-power-display">100 W</p>
+        </div>
+    </div>
+
+    <!-- Countdown Timer -->
+    <div id="countdown-section" class="hidden fixed inset-0 bg-gray-700 bg-opacity-90 flex items-center justify-center z-50">
+        <h2 id="countdown-timer" class="text-9xl font-bold text-white"></h2>
+    </div>
+     <button id="fullscreen-btn" class="hidden fixed bottom-4 left-4 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded z-50">Game View</button>
+
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
