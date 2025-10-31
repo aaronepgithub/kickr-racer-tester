@@ -8,7 +8,7 @@ function getRandomInt(min, max) {
 }
 
 // --- CONSTANTS FOR GAME VIEW ---
-const GAME_VIEW_DISTANCE = 0.25; // miles
+const GAME_VIEW_DISTANCE = 0.15; // miles
 // Rider is positioned closer to the center in game view for better visibility
 const RIDER_POSITION_PERCENT = 50; // Rider is centered horizontally
 
